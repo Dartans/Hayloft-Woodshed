@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Woodwork Collection - Hayloft Woodshed</title>
+    <base target="_parent">
+    <link rel="stylesheet" href="../../../css/styles.css">
+    <link rel="stylesheet" href="../../../css/gallery.css">
+    <link rel="stylesheet" href="../../../css/product-catalog.css">
+    <!-- Include the product API script -->
+    <script src="../../../js/product-api.js"></script>
+    <!-- 
+    EMBEDDING INSTRUCTIONS:
+    To properly embed this catalog as a responsive iframe without scrollbars:
+    1. Include the iframe-resizer.js script on the parent page:
+       <script src="/frontend/js/iframe-resizer.js"></script>
+    
+    2. Add the iframe with these attributes:
+       <iframe src="/frontend/pages/products/woodwork/woodwork-catalog.html" 
+               id="woodwork-iframe" 
+               frameborder="0" 
+               scrolling="no" 
+               style="width: 100%; border: none; overflow: hidden;"></iframe>
+    
+    3. Initialize the responsive iframe:
+       <script>
+           document.addEventListener('DOMContentLoaded', function() {
+               if (window.initResponsiveIframe) {
+                   window.initResponsiveIframe('#woodwork-iframe');
+               }
+           });
+       </script>
+    -->
+    <!-- This is a special catalog file for woodwork products that is used to maintain a list of all products in this category -->
+    <!-- The management service will update this file when products are added or removed -->
+    <style>
+        /* Inline styles for when displayed in iframe */
+        body.in-iframe {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            overflow: hidden; /* Prevent scrollbars */
+        }
+        body.in-iframe .standalone-header,
+        body.in-iframe .standalone-footer {
+            display: none;
+        }
+        
+        /* Navigation menu iframe styles */
+        .nav-menu-container {
+            width: 100%;
+            border: none;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header shown only in standalone mode -->
+    <header class="site-header standalone-header">
+        <div class="container">
+            <!-- Navigation menu iframe -->
+            <iframe src="../../../nav/menu.html" class="nav-menu-container" id="nav-menu" scrolling="no"></iframe>
+        </div>
+    </header>
+
+    <!-- Category hero section for standalone view -->
+    <section class="category-hero woodwork-hero standalone-header">
+        <div class="container">
+            <h1>Woodwork Collection</h1>
+            <p>Handcrafted wooden masterpieces, each telling a unique story through grain and form.</p>
+        </div>
+    </section>
+
+    <!-- Gallery controls for standalone view -->
+    <div class="container standalone-header">
+        <div class="gallery-controls">
+            <div class="sorting">
+                <label for="sort">Sort By:</label>
+                <select id="sort">
+                    <option value="newest">Newest First</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="name">Name</option>
+                </select>
+            </div>
+            
+            <div class="filters">
+                <label><input type="checkbox" checked> Available</label>
+                <label><input type="checkbox" checked> Bidding</label>
+                <label><input type="checkbox"> Sold</label>
+                <label><input type="checkbox" checked> Featured</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product catalog that works both standalone and in iframe -->
+    <div class="container">
+        <div class="products-grid woodwork-grid" id="woodwork-products">
+            <!-- Products will be loaded dynamically from the API -->
+            <div id="loading-indicator" class="loading">
+                <p>Loading products...</p>
+            </div>
+            
+            <div id="error-message" class="error-message" style="display: none;">
+                <p>Sorry, we couldn't load the product catalog. Please try again later.</p>
+            </div>
+            
+            <!-- No products message -->
+            <div id="no-products-message" class="no-products" style="display: none;">
+                <p>No products match the selected filters.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer shown only in standalone mode -->
+    <footer class="site-footer standalone-footer">
+        <div class="container">
+            <p>&copy; 2025 Hayloft Woodshed. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if this page is in an iframe
+            const isInIframe = window.self !== window.top;
+            if (isInIframe) {
+                document.body.classList.add('in-iframe');
+                
+                // Enhanced resize handling for professional display
+                function updateParentOnResize() {
+                    const height = document.body.scrollHeight;
+                    window.parent.postMessage({ type: 'resize', height: height }, '*');
+                }
+                
+                // Listen for checkSize messages from parent
+                window.addEventListener('message', function(event) {
+                    if (event.data && event.data.type === 'checkSize') {
+                        updateParentOnResize();
+                    }
+                });
+                
+                // Update on initial load and whenever content changes
+                window.addEventListener('load', updateParentOnResize);
+                window.addEventListener('resize', updateParentOnResize);
+                
+                // Use ResizeObserver for better layout updates
+                if (window.ResizeObserver) {
+                    const resizeObserver = new ResizeObserver(debounce(updateParentOnResize, 100));
+                    resizeObserver.observe(document.body);
+                }
+                
+                // Also update when products are filtered/sorted
+                const productsGrid = document.getElementById('woodwork-products');
+                if (productsGrid) {
+                    const mutationObserver = new MutationObserver(updateParentOnResize);
+                    mutationObserver.observe(productsGrid, { childList: true, subtree: true });
+                }
+            }
+            
+            // Elements references
+            const productsGrid = document.getElementById('woodwork-products');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const errorMessage = document.getElementById('error-message');
+            const noProductsMessage = document.getElementById('no-products-message');
+            
+            // Load products from API
+            loadProducts();
+            
+            /**
+             * Fetches and displays products
+             */
+            async function loadProducts() {
+                try {
+                    // Show loading indicator and hide error
+                    showElement(loadingIndicator);
+                    hideElement(errorMessage);
+                    hideElement(noProductsMessage);
+                    
+                    // Clear the grid
+                    productsGrid.innerHTML = '';
+                    productsGrid.appendChild(loadingIndicator);
+                    productsGrid.appendChild(errorMessage);
+                    productsGrid.appendChild(noProductsMessage);
+                    
+                    // Get current sort value
+                    const sortSelect = document.getElementById('sort');
+                    const sortBy = sortSelect ? sortSelect.value : 'newest';
+                    
+                    // API options
+                    const options = {
+                        category: 'woodwork',
+                        sort: sortBy
+                    };
+                    
+                    // In iframe mode, only fetch featured products
+                    if (isInIframe) {
+                        options.featured = true;
+                    }
+                    
+                    // Call the API function (from product-api.js)
+                    const response = await fetchProducts(options);
+                    
+                    // Check if the API call was successful
+                    if (response.success && response.products && response.products.length > 0) {
+                        // Hide loading indicator
+                        hideElement(loadingIndicator);
+                        
+                        // Render products
+                        response.products.forEach(product => {
+                            const card = createProductCard(product);
+                            productsGrid.appendChild(card);
+                        });
+                        
+                        // Apply filters if in standalone mode
+                        if (!isInIframe) {
+                            updateFilters();
+                        }
+                    } else {
+                        // Handle no products returned
+                        hideElement(loadingIndicator);
+                        showElement(noProductsMessage);
+                    }
+                } catch (error) {
+                    // Handle error
+                    console.error('Error loading products:', error);
+                    hideElement(loadingIndicator);
+                    showElement(errorMessage);
+                }
+            }
+            
+            /**
+             * Creates a product card element from product data
+             * @param {Object} product - Product data from API
+             * @returns {HTMLElement} - Product card element
+             */
+            function createProductCard(product) {
+                const card = document.createElement('div');
+                card.className = `product-card ${product.featured ? 'featured' : ''}`;
+                card.dataset.productId = product.id;
+                card.dataset.price = product.price;
+                card.dataset.date = product.date;
+                
+                card.innerHTML = `
+                    <div class="product-image">
+                        <img src="${product.thumbnail}" alt="${product.name}" loading="lazy">
+                        <span class="status-tag ${product.status}">${product.status}</span>
+                        <span class="category-badge woodwork">Woodwork</span>
+                    </div>
+                    <div class="product-info">
+                        <h3>${product.name}</h3>
+                        <p class="price">$${parseFloat(product.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                        <a href="${product.path}" class="btn btn-primary">View Details</a>
+                    </div>
+                `;
+                
+                return card;
+            }
+            
+            // Sorting functionality
+            const sortSelect = document.getElementById('sort');
+            if (sortSelect) {
+                sortSelect.addEventListener('change', function() {
+                    // Reload products with new sort option
+                    loadProducts();
+                });
+            }
+            
+            // Filter functionality
+            const filterCheckboxes = document.querySelectorAll('.filters input');
+            if (filterCheckboxes.length > 0) {
+                filterCheckboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', updateFilters);
+                });
+            }
+            
+            function updateFilters() {
+                // Don't apply additional filtering in iframe mode
+                if (isInIframe) return;
+                
+                const showAvailable = document.querySelector('.filters input:nth-child(1)').checked;
+                const showBidding = document.querySelector('.filters input:nth-child(2)').checked;
+                const showSold = document.querySelector('.filters input:nth-child(3)').checked;
+                const showFeatured = document.querySelector('.filters input:nth-child(4)').checked;
+                
+                const products = document.querySelectorAll('.product-card');
+                let visibleCount = 0;
+                
+                products.forEach(product => {
+                    const status = product.querySelector('.status-tag').textContent;
+                    const isFeatured = product.classList.contains('featured');
+                    
+                    let shouldShow = false;
+                    
+                    if ((status === 'available' && showAvailable) || 
+                        (status === 'bidding' && showBidding) || 
+                        (status === 'sold' && showSold)) {
+                        if (!showFeatured || (showFeatured && isFeatured)) {
+                            shouldShow = true;
+                            visibleCount++;
+                        }
+                    }
+                    
+                    product.style.display = shouldShow ? 'flex' : 'none';
+                });
+                
+                // Show/hide no products message
+                if (visibleCount === 0) {
+                    showElement(noProductsMessage);
+                } else {
+                    hideElement(noProductsMessage);
+                }
+                
+                // Trigger resize if in iframe
+                if (isInIframe) {
+                    setTimeout(function() {
+                        window.parent.postMessage({ type: 'resize', height: document.body.scrollHeight }, '*');
+                    }, 50);
+                }
+            }
+            
+            // Helper functions for showing/hiding elements
+            function showElement(element) {
+                if (element) element.style.display = '';
+            }
+            
+            function hideElement(element) {
+                if (element) element.style.display = 'none';
+            }
+            
+            // Utility function to limit frequent calls (debounce)
+            function debounce(func, wait) {
+                let timeout;
+                return function() {
+                    const context = this, args = arguments;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(function() {
+                        func.apply(context, args);
+                    }, wait);
+                };
+            }
+        });
+    </script>
+</body>
+</html>

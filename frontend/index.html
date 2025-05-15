@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hayloft Woodshed - Artisan Crafts & Art</title>
+    <base target="_parent">
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Add iframe-resizer script -->
+    <script src="js/iframe-resizer.js"></script>
+    <style>
+        body {
+            background-image: url('images/background.png');
+            background-repeat: repeat;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.85); /* White overlay to fade the background */
+            z-index: -1;
+        }
+        
+        .nav-iframe-container {
+            width: 100%;
+            min-height: 80px;
+            border: none;
+            overflow: hidden;
+            transition: height 0.3s ease;
+        }
+        
+        /* Added styles for product catalog iframes */
+        .catalog-iframe {
+            width: 100%;
+            border: none;
+            overflow: hidden;
+            transition: height 0.3s ease;
+        }
+
+        /* Styles for hero video background */
+        .video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        /* Add overlay to fade the video */
+        .video-background::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); /* Darker overlay for better text visibility */
+            z-index: 2;
+        }
+
+        .hero-video {
+            width: 100%;
+            height: auto;
+            min-height: 100%;
+            min-width: 100%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            opacity: 0.85; /* Slightly faded video */
+        }
+
+        .video-fallback {
+            display: none;
+            /* Fallback image styles */
+            background: url('images/hero-fallback.jpg') no-repeat center center;
+            background-size: cover;
+        }
+
+        /* Ensure hero content is above the video */
+        .hero {
+            position: relative;
+        }
+        
+        .hero .container {
+            position: relative;
+            z-index: 3; /* Higher than video overlay */
+        }
+
+        .hero-content {
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Enhanced text shadow for readability */
+        }
+
+        /* Styles for Creative Process section */
+        .process {
+            text-align: center;
+            padding: 60px 0;
+            background-color: transparent;
+        }
+
+        .process-steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 2rem;
+        }
+
+        .step {
+            flex: 1;
+            min-width: 200px;
+            max-width: 250px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: var(--border-radius, 4px);
+            box-shadow: var(--box-shadow, 0 2px 10px rgba(0, 0, 0, 0.1));
+            transition: var(--transition, all 0.3s ease);
+            text-align: center;
+        }
+
+        .step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .step-icon {
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            background-color: var(--primary-color, #5d4037);
+            color: white;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .step h3 {
+            color: var(--text-color, #37474f);
+            margin-bottom: 1rem;
+        }
+
+        .step p {
+            color: var(--text-color, #37474f);
+            text-shadow: 0px 0px 1px rgba(255, 255, 255, 0.8);
+        }
+
+        @media (max-width: 768px) {
+            .hero-content {
+                position: relative;
+                z-index: 3;
+                /* Ensure content is above the video */
+            }
+            
+            .process-steps {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .step {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <!-- Replace the static navigation with an iframe -->
+            <iframe src="nav/menu.html" class="nav-iframe-container" id="nav-iframe" frameborder="0" scrolling="no"></iframe>
+        </div>
+    </header>
+
+    <!-- Listen for resize messages from the iframe -->
+    <script>
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'resize-iframe') {
+                const navIframe = document.getElementById('nav-iframe');
+                if (navIframe) {
+                    navIframe.style.height = event.data.height + 'px';
+                }
+            }
+        }, false);
+        
+        // Also handle window resize events to ensure proper navigation display
+        window.addEventListener('resize', function() {
+            const navIframe = document.getElementById('nav-iframe');
+            // Trigger a resize check in the iframe
+            if (navIframe && navIframe.contentWindow) {
+                try {
+                    navIframe.contentWindow.postMessage({ type: 'check-size' }, '*');
+                } catch(e) {
+                    console.log('Could not trigger resize check: ' + e);
+                }
+            }
+        });
+    </script>
+
+    <section class="hero">
+        <div class="video-background">
+            <video autoplay muted loop playsinline class="hero-video" id="hero-video">
+                <source src="videos/hero1.mp4" type="video/mp4" id="video-source">
+                <source src="videos/hero2.mp4" type="video/mp4" id="video-source">
+                <!-- Additional video sources can be added here for different formats if needed -->
+                <!-- Your browser does not support the video tag. -->
+            </video>
+            <!-- Fallback image in case video doesn't load -->
+            <div class="video-fallback"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <h2>Art That Tells a Story</h2>
+                <p>Discover a unique collection of handcrafted woodwork, artisan knits, and original paintings created with passion and precision.</p>
+                <a href="pages/gallery.html" class="btn btn-primary">Explore Collection</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="categories">
+        <div class="container">
+            <h2>Browse by Category</h2>
+            <div class="category-grid">
+
+                    <!--load products as iframe from paintings-catalog.html-->
+    <section class="gallery">
+        <div class="container">
+            <h2>Paintings Gallery</h2>
+            <!-- Updated iframe to use better responsive solution -->
+            <iframe src="pages/products/paintings/paintings-catalog.html" 
+                    id="paintings-iframe" 
+                    class="catalog-iframe" 
+                    frameborder="0" 
+                    scrolling="no"></iframe>
+        </div>
+    </section>
+
+    <!--load products as iframe from knits-catalog.html-->
+    <section class="gallery">
+        <div class="container">
+            <h2>Knitted Items Gallery</h2>
+            <!-- Updated iframe to use better responsive solution -->
+            <iframe src="pages/products/knits/knits-catalog.html" 
+                    id="knits-iframe" 
+                    class="catalog-iframe" 
+                    frameborder="0" 
+                    scrolling="no"></iframe>
+        </div>
+    </section>
+
+    <!--load products as iframe from woodwork-catalog.html-->
+    <section class="gallery">
+        <div class="container">
+            <h2>Woodwork Gallery</h2>
+            <!-- Updated iframe to use better responsive solution -->
+            <iframe src="pages/products/woodwork/woodwork-catalog.html" 
+                    id="woodwork-iframe" 
+                    class="catalog-iframe" 
+                    frameborder="0" 
+                    scrolling="no"></iframe>
+        </div>
+    </section>
+
+
+            </div>
+        </div>
+    </section>
+
+    <section class="process">
+        <div class="container">
+            <h2>The Creative Process</h2>
+            <div class="process-steps">
+                <div class="step">
+                    <div class="step-icon">1</div>
+                    <h3>Inspiration</h3>
+                    <p>Every piece begins with inspiration drawn from nature, history, or everyday moments.</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">2</div>
+                    <h3>Design</h3>
+                    <p>Whether wood, paint, or knitted components, each creation starts with careful planning.</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">3</div>
+                    <h3>Creation</h3>
+                    <p>Handcrafted with traditional techniques and attention to every detail.</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">4</div>
+                    <h3>Finishing</h3>
+                    <p>The final touches that make each piece special and ready to become a part of your life.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="call-to-action">
+        <div class="container">
+            <h2>Looking for Something Special?</h2>
+            <p>Whether you're interested in a custom woodwork piece, a bespoke painting, or a personalized knitted garmet, We're here to create something unique just for you.</p>
+            <a href="pages/commission.html" class="btn btn-primary">Discuss a Commission</a>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-cols">
+                <div class="footer-col">
+                    <h3>Hayloft Woodshed</h3>
+                    <p>Creating heirloom quality art, woodcraft, and creative knits since 2000.</p>
+                </div>
+                <div class="footer-col">
+                    <h3>Art Categories</h3>
+                    <ul>
+                        <li><a href="pages/woodwork.html">Woodwork</a></li>
+                        <li><a href="pages/knits.html">Knitted Items</a></li>
+                        <li><a href="pages/paintings.html">Paintings</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="pages/gallery.html">Gallery</a></li>
+                        <li><a href="pages/about.html">About</a></li>
+                        <li><a href="pages/commission.html">Custom Orders</a></li>
+                        <li><a href="pages/contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Contact</h3>
+                    <p>123 Artisan Way<br>Craftsville, WD 12345</p>
+                    <p>studio@hayloftwoodshed.com</p>
+                    <p>(555) 123-4567</p>
+                </div>
+                <div class="footer-col">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe to our newsletter for updates on new pieces and events.</p>
+                    <form action="/api/subscribe" method="POST">
+                        <input type="email" name="email" placeholder="Your email" required>
+                        <button type="submit" class="btn btn-secondary">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Hayloft Woodshed. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Initialize responsive iframes -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize each catalog iframe
+            if (window.initResponsiveIframe) {
+                window.initResponsiveIframe('#paintings-iframe');
+                window.initResponsiveIframe('#knits-iframe');
+                window.initResponsiveIframe('#woodwork-iframe');
+            }
+        });
+    </script>
+
+    <!-- Script to cycle hero videos -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const videoElement = document.getElementById('hero-video');
+            const videoSource = document.getElementById('video-source');
+            const videoFiles = ['hero1.mp4', 'hero2.mp4']; // All available video files
+            let currentVideoIndex = 0;
+
+            // Function to load the next video
+            function loadNextVideo() {
+                currentVideoIndex = (currentVideoIndex + 1) % videoFiles.length;
+                videoSource.src = 'videos/' + videoFiles[currentVideoIndex];
+                videoElement.load();
+                videoElement.play();
+            }
+
+            // Listen for the 'ended' event to transition to the next video
+            videoElement.addEventListener('ended', loadNextVideo);
+            
+            // In case the ended event doesn't fire properly, also set a backup timer
+            // that's longer than a typical video duration
+            videoElement.addEventListener('play', function() {
+                // Clear any existing timeout
+                if (window.videoTimeout) {
+                    clearTimeout(window.videoTimeout);
+                }
+                
+                // Set a new timeout as a backup (2 minutes)
+                window.videoTimeout = setTimeout(loadNextVideo, 120000);
+            });
+        });
+    </script>
+</body>
+</html>

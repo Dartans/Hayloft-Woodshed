@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Menu - Hayloft Woodshed</title>
+    <base target="_parent">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/menu.css">
+</head>
+<body class="menu-body">
+    <div class="logo">
+        <img src="../images/SmallLogo.jpg" alt="Hayloft Woodshed Logo" class="logo-img">
+        <div class="logo-text">
+            <h1>Hayloft Woodshed</h1>
+            <p class="tagline">Handcrafted Art & Artistry</p>
+        </div>
+    </div>
+    <button class="menu-toggle" aria-label="Toggle Menu">☰</button>
+    <nav class="main-nav">
+        <ul>
+            <li><a href="../index.html" data-path="index.html">Home</a></li>
+            <li><a href="../pages/gallery.html" data-path="pages/gallery.html">All Works</a></li>
+            <li><a href="../pages/products/woodwork/woodwork-catalog.html" data-path="pages/products/woodwork/woodwork-catalog.html">Woodwork</a></li>
+            <li><a href="../pages/products/knits/knits-catalog.html" data-path="pages/products/knits/knits-catalog.html">Knitted Items</a></li>
+            <li><a href="../pages/products/paintings/paintings-catalog.html" data-path="pages/products/paintings/paintings-catalog.html">Paintings</a></li>
+            <li><a href="../pages/about.html" data-path="pages/about.html">About the Artists</a></li>
+            <li><a href="../pages/contact.html" data-path="pages/contact.html">Contact</a></li>
+        </ul>
+    </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                // Get the current page URL - with fallback if parent window access fails
+                let currentPath = '';
+                try {
+                    currentPath = window.parent.location.pathname.split('/').pop();
+                } catch (e) {
+                    // Fallback if access to parent window fails due to cross-origin issues
+                    currentPath = window.location.pathname.split('/').pop();
+                    console.log('Using fallback navigation: ' + currentPath);
+                }
+                
+                // Find and highlight the current page in the menu
+                const menuLinks = document.querySelectorAll('.main-nav a');
+                menuLinks.forEach(link => {
+                    const dataPath = link.getAttribute('data-path');
+                    if (dataPath && (dataPath.includes(currentPath) || 
+                       (currentPath === '' && dataPath === 'index.html'))) {
+                        link.classList.add('active');
+                    }
+                });
+
+                // Reset the mobile menu if window is resized above mobile breakpoint
+                function handleResize() {
+                    const mainNav = document.querySelector('.main-nav');
+                    if (window.innerWidth > 768 && mainNav.classList.contains('show')) {
+                        mainNav.classList.remove('show');
+                    }
+                    updateIframeHeight();
+                }
+
+                // Handle responsive menu toggle
+                const menuToggle = document.querySelector('.menu-toggle');
+                const mainNav = document.querySelector('.main-nav');
+                
+                if (menuToggle) {
+                    menuToggle.addEventListener('click', function(e) {
+                        e.preventDefault(); // Prevent any default behavior
+                        mainNav.classList.toggle('show');
+                        
+                        // Update the iframe height with proper timing for animation
+                        if (mainNav.classList.contains('show')) {
+                            // Menu opening - delay to account for animation
+                            setTimeout(updateIframeHeight, 300);
+                        } else {
+                            // Menu closing - give animation time to complete
+                            setTimeout(updateIframeHeight, 350);
+                        }
+                    });
+                }
+                
+                // Handle clicks on menu items in mobile view
+                menuLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        // If we're in mobile view and menu is open
+                        if (window.innerWidth <= 768 && mainNav.classList.contains('show')) {
+                            // Keep menu visible briefly to allow for click animation
+                            setTimeout(() => {
+                                mainNav.classList.remove('show');
+                                // Update iframe height after menu closes
+                                setTimeout(updateIframeHeight, 350);
+                            }, 150);
+                        }
+                    });
+                });
+                
+                // Function to update iframe height
+                function updateIframeHeight() {
+                    // Ensure DOM has fully updated before measuring height
+                    requestAnimationFrame(function() {
+                        try {
+                            window.parent.postMessage({
+                                type: 'resize-iframe',
+                                height: document.body.scrollHeight
+                            }, '*');
+                        } catch (e) {
+                            console.log('Could not resize iframe: ' + e.message);
+                        }
+                    });
+                }
+                
+                // Initial iframe height update
+                updateIframeHeight();
+                
+                // Update iframe height on window resize
+                window.addEventListener('resize', handleResize);
+                
+                // Listen for messages from parent
+                window.addEventListener('message', function(event) {
+                    if (event.data.type === 'check-size') {
+                        updateIframeHeight();
+                    }
+                });
+                
+            } catch (e) {
+                console.error('Navigation menu error: ' + e.message);
+            }
+        });
+    </script>
+</body>
+</html>

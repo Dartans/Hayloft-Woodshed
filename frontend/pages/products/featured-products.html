@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Featured Products - Hayloft Woodshed</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+    <!-- Include the iframe resizer script -->
+    <script src="../../js/iframe-resizer.js"></script>
+    <style>
+        .featured-section {
+            margin-bottom: 40px;
+        }
+        
+        .featured-section h2 {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .catalog-iframe {
+            width: 100%;
+            border: none;
+            overflow: hidden;
+            transition: height 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <!-- Navigation menu iframe -->
+            <iframe src="../../nav/menu.html" class="nav-menu-container" id="nav-menu" scrolling="no"></iframe>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>Our Featured Products</h1>
+        <p>Discover our handcrafted treasures carefully selected for you.</p>
+        
+        <!-- Woodwork Section -->
+        <section class="featured-section">
+            <h2>Featured Woodwork</h2>
+            <iframe src="./woodwork/woodwork-catalog.html" 
+                    id="woodwork-iframe" 
+                    class="catalog-iframe" 
+                    frameborder="0" 
+                    scrolling="no"></iframe>
+        </section>
+        
+        <!-- Paintings Section -->
+        <section class="featured-section">
+            <h2>Featured Paintings</h2>
+            <iframe src="./paintings/paintings-catalog.html" 
+                    id="paintings-iframe" 
+                    class="catalog-iframe" 
+                    frameborder="0" 
+                    scrolling="no"></iframe>
+        </section>
+        
+        <!-- Knits Section -->
+        <section class="featured-section">
+            <h2>Featured Knitted Items</h2>
+            <iframe src="./knits/knits-catalog.html" 
+                    id="knits-iframe" 
+                    class="catalog-iframe" 
+                    frameborder="0" 
+                    scrolling="no"></iframe>
+        </section>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2025 Hayloft Woodshed. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize each responsive iframe
+            if (window.initResponsiveIframe) {
+                window.initResponsiveIframe('#woodwork-iframe');
+                window.initResponsiveIframe('#paintings-iframe');
+                window.initResponsiveIframe('#knits-iframe');
+                window.initResponsiveIframe('#nav-menu');
+            }
+        });
+    </script>
+</body>
+</html>

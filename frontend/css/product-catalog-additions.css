@@ -1,0 +1,47 @@
+/* Loading indicator */
+.loading {
+    text-align: center;
+    padding: 30px;
+    width: 100%;
+    grid-column: 1 / -1;
+}
+
+.loading p {
+    font-size: 1.2rem;
+    color: #666;
+    margin: 0;
+}
+
+/* Error message */
+.error-message {
+    text-align: center;
+    padding: 30px;
+    background-color: #ffeeee;
+    border: 1px solid #ffcccc;
+    border-radius: var(--border-radius);
+    grid-column: 1 / -1;
+    width: 100%;
+}
+
+.error-message p {
+    font-size: 1.2rem;
+    color: #cc0000;
+    margin: 0;
+}
+
+/* No products message */
+.no-products {
+    text-align: center;
+    padding: 30px;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    grid-column: 1 / -1;
+    width: 100%;
+}
+
+.no-products p {
+    font-size: 1.2rem;
+    color: #666;
+    margin: 0;
+}

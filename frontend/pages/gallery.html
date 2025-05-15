@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Gallery - Hayloft Woodshed</title>
+    <base target="_parent">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/gallery.css">
+    <!-- Add iframe-resizer script -->
+    <script src="../js/iframe-resizer.js"></script>
+    <style>
+        .nav-iframe-container {
+            width: 100%;
+            height: 80px;
+            border: none;
+            overflow: hidden;
+        }
+        
+        /* Added styles for catalog iframes */
+        .catalog-iframe {
+            width: 100%;
+            border: none;
+            overflow: hidden;
+            transition: height 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container">
+            <!-- Replace the static navigation with an iframe -->
+            <iframe src="../nav/menu.html" class="nav-iframe-container" id="nav-iframe" frameborder="0" scrolling="no"></iframe>
+        </div>
+    </header>
+
+    <!-- Listen for resize messages from the iframe -->
+    <script>
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'resize-iframe') {
+                document.getElementById('nav-iframe').style.height = event.data.height + 'px';
+            }
+        }, false);
+    </script>
+
+    <!--load products as iframe from paintings-catalog.html-->
+    <section class="gallery">
+        <div class="container">
+            <h2>Paintings Gallery</h2>
+            <!-- Updated iframe to use better responsive solution -->
+            <iframe src="../pages/products/paintings/paintings-catalog.html" 
+                    id="paintings-iframe" 
+                    class="catalog-iframe" 
+                    frameborder="0" 
+                    scrolling="no"></iframe>
+        </div>
+    </section>
+
+    <!--load products as iframe from knits-catalog.html-->
+    <section class="gallery">
+        <div class="container">
+            <h2>Knitted Items Gallery</h2>
+            <!-- Updated iframe to use better responsive solution -->
+            <iframe src="../pages/products/knits/knits-catalog.html" 
+                    id="knits-iframe" 
+                    class="catalog-iframe" 
+                    frameborder="0" 
+                    scrolling="no"></iframe>
+        </div>
+    </section>
+
+    <!--load products as iframe from woodwork-catalog.html-->
+    <section class="gallery">
+        <div class="container">
+            <h2>Woodwork Gallery</h2>
+            <!-- Updated iframe to use better responsive solution -->
+            <iframe src="../pages/products/woodwork/woodwork-catalog.html" 
+                    id="woodwork-iframe" 
+                    class="catalog-iframe" 
+                    frameborder="0" 
+                    scrolling="no"></iframe>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2025 Hayloft Woodshed. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Initialize responsive iframes -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize each catalog iframe
+            if (window.initResponsiveIframe) {
+                window.initResponsiveIframe('#paintings-iframe');
+                window.initResponsiveIframe('#knits-iframe');
+                window.initResponsiveIframe('#woodwork-iframe');
+            }
+        });
+    </script>
+</body>
+</html>

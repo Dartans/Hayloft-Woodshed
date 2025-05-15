@@ -1,0 +1,268 @@
+/* Product Catalog Specific Styles */
+
+/* Featured product card styles */
+.product-card.featured {
+    border: 2px solid var(--secondary-color);
+    position: relative;
+}
+
+.product-card.featured::before {
+    content: "⭐ Featured";
+    position: absolute;
+    top: -12px;
+    left: 10px;
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 2px 10px;
+    border-radius: var(--border-radius);
+    font-size: 0.8rem;
+    z-index: 1;
+}
+
+/* Category-specific styling */
+.woodwork-grid .product-card {
+    border-bottom: 4px solid var(--primary-color);
+}
+
+.knits-grid .product-card {
+    border-bottom: 4px solid #558b2f;
+}
+
+.paintings-grid .product-card {
+    border-bottom: 4px solid #1565c0;
+}
+
+/* Embedded iframe mode - IMPROVED */
+body.in-iframe {
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important; /* Prevent scrollbars */
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+body.in-iframe .container {
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Force product grid to stay within iframe bounds */
+body.in-iframe .products-grid {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.product-card .product-info .description {
+    display: -webknit-box;
+    -webknit-line-clamp: 3;
+    -webknit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Hover effects */
+.product-card .product-image {
+    overflow: hidden;
+}
+
+.product-card .product-image img {
+    transition: transform 0.5s ease;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+.product-card:hover .product-image img {
+    transform: scale(1.05);
+}
+
+/* Product grid spacing adjustments */
+.products-grid {
+    margin-top: 20px;
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    box-sizing: border-box;
+    gap: 20px;
+}
+
+/* Force product cards to stay within container */
+.product-card {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    display: flex !important;
+}
+
+/* Loading indicator */
+.loading {
+    text-align: center;
+    padding: 30px;
+    width: 100%;
+    grid-column: 1 / -1;
+}
+
+.loading p {
+    font-size: 1.2rem;
+    color: #666;
+    margin: 0;
+}
+
+/* Error message */
+.error-message {
+    text-align: center;
+    padding: 30px;
+    background-color: #ffeeee;
+    border: 1px solid #ffcccc;
+    border-radius: var(--border-radius);
+    grid-column: 1 / -1;
+    width: 100%;
+}
+
+.error-message p {
+    font-size: 1.2rem;
+    color: #cc0000;
+    margin: 0;
+}
+
+/* No products message */
+.no-products {
+    text-align: center;
+    padding: 30px;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    grid-column: 1 / -1;
+    width: 100%;
+}
+
+.no-products p {
+    font-size: 1.2rem;
+    color: #666;
+    margin: 0;
+}
+    flex-direction: column !important;
+}
+
+.product-card .product-info {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.product-card .product-info .btn {
+    margin-top: auto !important;
+}
+
+/* Media queries for responsive behavior */
+@media (max-width: 768px) {
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 15px;
+    }
+    
+    .product-card .product-image {
+        height: 200px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 10px;
+    }
+    
+    .product-card .product-image {
+        height: 180px !important;
+    }
+    
+    .product-card .product-info h3 {
+        font-size: 1.1rem !important;
+    }
+    
+    .product-card .product-info .price {
+        font-size: 1rem !important;
+    }
+}
+
+/* Animation for newly added products */
+@keyframes highlightNew {
+    0% { 
+        box-shadow: 0 0 0 2px rgba(255, 152, 0, 0);
+    }
+    50% { 
+        box-shadow: 0 0 0 4px rgba(255, 152, 0, 0.7);
+    }
+    100% { 
+        box-shadow: 0 0 0 2px rgba(255, 152, 0, 0);
+    }
+}
+
+.product-card.new {
+    animation: highlightNew 2s ease infinite;
+}
+
+/* Transparent background for iframe embedding */
+body.in-iframe {
+    background-color: transparent !important;
+}
+
+/* Make product cards have slightly translucent background for better readability */
+body.in-iframe .product-card {
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+/* Loading indicator */
+.loading {
+    text-align: center;
+    padding: 30px;
+    width: 100%;
+    grid-column: 1 / -1;
+}
+
+.loading p {
+    font-size: 1.2rem;
+    color: #666;
+    margin: 0;
+}
+
+/* Error message */
+.error-message {
+    text-align: center;
+    padding: 30px;
+    background-color: #ffeeee;
+    border: 1px solid #ffcccc;
+    border-radius: var(--border-radius);
+    grid-column: 1 / -1;
+    width: 100%;
+}
+
+.error-message p {
+    font-size: 1.2rem;
+    color: #cc0000;
+    margin: 0;
+}
+
+/* No products message */
+.no-products {
+    text-align: center;
+    padding: 30px;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    grid-column: 1 / -1;
+    width: 100%;
+}
+
+.no-products p {
+    font-size: 1.2rem;
+    color: #666;
+    margin: 0;
+}
