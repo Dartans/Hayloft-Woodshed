@@ -412,6 +412,18 @@ p {
     object-fit: cover;
 }
 
+.category-item .catalog-iframe {
+    width: 100%;
+    min-height: 300px;
+    border: none;
+    margin-top: 10px;
+}
+
+.category-item h3 {
+    margin: 15px 0;
+    color: var(--primary-color, #5d4037);
+}
+
 .category-item h3 {
     margin-top: 20px;
 }

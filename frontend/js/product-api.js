@@ -122,7 +122,7 @@ async function fetchFeaturedProducts(options = {}) {
         
         // Make the request
         const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
-        const response = await fetch(`${API_BASE_URL}/products/featured${queryString}`);
+        const response = await fetch(`${API_BASE_URL}/featured-products${queryString}`);
         
         if (!response.ok) {
             throw new Error(`API request failed with status ${response.status}`);
