@@ -4,7 +4,7 @@
  */
 
 // API Base URL - Change this to match your actual API endpoint
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = 'http://products.hayloft-woodshed.ca:3001/api'
 
 /**
  * Fetches products from the API based on provided filters
